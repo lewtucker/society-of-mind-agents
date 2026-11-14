@@ -9,7 +9,7 @@ An agentic system with long-term memory inspired by Marvin Minsky's *Society of 
 ## Repository Structure
 
 ```
-Claude_SoM/
+Society_of_Minds/
 ├── CLAUDE.md
 ├── docs/
 │   ├── ARCHITECTURE.md          ← living copy (always latest)
