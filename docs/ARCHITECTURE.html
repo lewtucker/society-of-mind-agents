@@ -1,0 +1,411 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Society of Mind Architecture</title><style>body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif;line-height:1.6;color:#1a1a1a;max-width:800px;margin:0 auto;padding:40px 20px;font-size:11pt}@page{margin:.75in;size:letter}h1{font-size:22pt;border-bottom:2px solid #333;padding-bottom:8px;margin-top:30px;page-break-after:avoid}h2{font-size:16pt;color:#2c3e50;border-bottom:1px solid #ccc;padding-bottom:4px;margin-top:24px;page-break-after:avoid}h3{font-size:13pt;color:#34495e;margin-top:20px;page-break-after:avoid}h4{font-size:11pt;color:#34495e;margin-top:16px;page-break-after:avoid}code{background:#f4f4f4;padding:2px 6px;border-radius:3px;font-size:10pt;font-family:SF Mono,Menlo,Consolas,monospace}pre{background:#f4f4f4;color:#444;padding:16px;border-radius:6px;overflow-x:auto;font-size:8.5pt;line-height:1.3;page-break-inside:avoid;white-space:pre;font-family:SF Mono,Menlo,Consolas,monospace}pre code{background:none;padding:0;color:inherit;font-size:inherit}table{width:100%;border-collapse:collapse;margin:16px 0;font-size:9.5pt;page-break-inside:avoid}th{background:#2c3e50;color:#fff;padding:10px 12px;text-align:left;font-weight:600}td{padding:8px 12px;border-bottom:1px solid #ddd;vertical-align:top}tr:nth-child(even){background:#f8f9fa}blockquote{border-left:4px solid #3498db;margin:16px 0;padding:12px 20px;background:#f0f7fd;color:#2c3e50;page-break-inside:avoid}ul,ol{padding-left:24px}li{margin-bottom:4px}a{color:#2980b9;text-decoration:none}hr{border:none;border-top:1px solid #ccc;margin:24px 0}.key{border-left:4px solid #27ae60;background:#f0faf4;padding:12px 20px;margin:16px 0;border-radius:0 6px 6px 0;page-break-inside:avoid}</style></head><body><h1>Society of Mind — Agentic System Architecture</h1>
+<p>An agentic system with long-term memory based on Marvin Minsky's <em>Society of Mind</em> (1986).</p>
+<hr>
+<h2>1. Vision</h2>
+<p>Minsky's theory proposes that intelligence emerges not from any single process but from the interaction of many specialized agents organized into societies. No single agent contains the intelligence of the whole — each is a specialist, capable of reasoning within its domain but ignorant of the larger picture. The intelligence lives in the interactions, the memory, and the coordination.</p>
+<p>In 1986, Minsky had to describe agents abstractly because no technology could implement them. In 2026, LLMs are the natural substrate. An LLM-backed agent can reason about its domain, handle ambiguity, and make judgments — but it cannot maintain long-term memory, learn from failure, coordinate across sessions, or resolve conflicts with competing perspectives. The society provides what individual agents lack.</p>
+<p>The system should demonstrate:</p>
+<ul>
+<li>Behavior that exceeds what any individual agent achieves alone — and that improves over time</li>
+<li>Long-term memory via K-lines (snapshots of successful agent activations) that persists across sessions</li>
+<li>Frame-based knowledge representation with defaults and slot-filling</li>
+<li>Layered supervision (B-brains) without central control</li>
+<li>Learning from both success and failure, accumulated over weeks and months of use</li>
+</ul>
+<hr>
+<h2>2. Minsky Concepts → Software Mapping</h2>
+<h3>2.1 Agents and Agencies</h3>
+<table>
+<tr><th>Minsky Concept</th><th>Definition</th><th>Software Implementation</th></tr>
+<tr><td><strong>Agent</strong></td><td>Specialized reasoner — capable within its domain, ignorant of the larger picture</td><td>LLM-backed service with a focused system prompt, constrained tools, and single responsibility</td></tr>
+<tr><td><strong>Agency</strong></td><td>Group of agents viewed as a unified capability</td><td>Module/namespace grouping related agents, presenting a coherent interface</td></tr>
+<tr><td><strong>Society</strong></td><td>The entire collection of agents, their connections, and shared memory</td><td>The complete running system</td></tr>
+</table>
+<div class="key"><p><strong>Key principle</strong>: No single agent contains the intelligence of the whole society. Each agent can reason within its specialty — understanding context, making judgments, handling ambiguity — but it doesn't know what other agents are doing, can't maintain memory across sessions, and can't resolve conflicts with competing perspectives. The society provides the coordination, memory, and structure that individual agents lack. Intelligence arises from how agents are <em>connected and coordinated</em>, not from what any single agent can do alone.</p></div>
+<p><strong>Agent vs. Agency duality</strong>: From the outside, an agency appears to "know" something. From the inside, it's a group of specialized reasoners passing signals to each other. Both views are valid and useful at different times.</p>
+<p><strong>What makes this different from bare LLM orchestration</strong>: Current agent frameworks (LangChain, CrewAI, etc.) chain LLM calls in sequence. This architecture adds persistent K-line memory, failure learning via censors, structured conflict resolution, frame-based knowledge, and an observable event bus — the connective tissue that transforms isolated reasoning moments into cumulative, persistent intelligence.</p>
+<h3>2.2 Communication: Polynemes and Isonomes</h3>
+<table>
+<tr><th>Minsky Concept</th><th>Definition</th><th>Software Implementation</th></tr>
+<tr><td><strong>Polyneme</strong></td><td>Single signal interpreted differently by each receiving agency</td><td>Event broadcast (pub/sub) — each subscriber reacts in its own way</td></tr>
+<tr><td><strong>Isonome</strong></td><td>Signal with <em>uniform</em> built-in effects across agencies</td><td>System-wide control signal (e.g., "increase detail level")</td></tr>
+<tr><td><strong>Pronome</strong></td><td>Temporary role binding — "the current Actor" or "the current Goal"</td><td>Context variable bound per task/conversation</td></tr>
+<tr><td><strong>Microneme</strong></td><td>Subtle context fragment that shades all interpretation</td><td>Contextual embedding attached to every message</td></tr>
+</table>
+<div class="key"><p><strong>Key principle</strong>: Agents don't share a common language. Communication happens through polyneme broadcasts where each receiver has learned its own response. This means the same event can trigger completely different actions in different agencies — and that's by design.</p></div>
+<h3>2.3 Memory: K-Lines</h3>
+<table>
+<tr><th>Minsky Concept</th><th>Definition</th><th>Software Implementation</th></tr>
+<tr><td><strong>K-Line</strong></td><td>Memory snapshot — records which agents were active during a successful episode</td><td>Serialized activation state stored with vector embedding + metadata</td></tr>
+<tr><td><strong>Level-Band</strong></td><td>Strong core knowledge + weak peripheral defaults</td><td>Confidence-weighted fields; core fields persist, fringe fields decay</td></tr>
+<tr><td><strong>Default Assumption</strong></td><td>Weak belief used when no better info available, easily displaced</td><td>Low-confidence slot filler in a frame</td></tr>
+<tr><td><strong>K-Society</strong></td><td>Collection of K-lines that together represent learned knowledge</td><td>A namespace of related memories in the vector store</td></tr>
+<tr><td><strong>Knowledge-Tree</strong></td><td>K-lines referencing other K-lines hierarchically</td><td>Tree-structured memory index</td></tr>
+</table>
+<div class="key"><p><strong>Key principle (K-line theory)</strong>: When you solve a problem, create a K-line that records which agents were active. Later, when a similar problem arises, reactivating that K-line puts the system in a similar mental state — making the same agents available. You become "more like an earlier version of yourself."</p></div>
+<p><strong>Level-banding is critical</strong>: K-lines don't attach to all agents equally. There's a strong central band (core properties) and weak fringes (peripheral details). The fringes serve as default assumptions — they're easily displaced when better information arrives. Too much detail and the memory is too specific; too little and it's useless.</p>
+<p><strong>Hierarchical memory</strong>: K-lines can reference other K-lines (not just raw agents). This creates knowledge-trees that are more economical and organized, though they lose some perceptual precision in favor of stereotypes and defaults.</p>
+<h3>2.4 Knowledge: Frames</h3>
+<table>
+<tr><th>Minsky Concept</th><th>Definition</th><th>Software Implementation</th></tr>
+<tr><td><strong>Frame</strong></td><td>Stereotype knowledge structure with terminal slots and default fillers</td><td>Schema/template with typed slots and default values</td></tr>
+<tr><td><strong>Terminal</strong></td><td>Slot in a frame where specific information attaches</td><td>Typed field in a schema</td></tr>
+<tr><td><strong>Trans-Frame</strong></td><td>Action template: Actor → Action → Recipient, with Origin and Destination</td><td>Workflow step template with role slots</td></tr>
+<tr><td><strong>Frame-Array</strong></td><td>Family of frames sharing terminals but representing different perspectives</td><td>Multiple views of the same entity sharing a common interface</td></tr>
+<tr><td><strong>Picture-Frame</strong></td><td>Spatial frame indexed by direction-nemes (top, left, center, etc.)</td><td>Spatial data structure with directional indexing</td></tr>
+</table>
+<div class="key"><p><strong>Key principle</strong>: Frames are pre-formed structures drawn from experience. They contain many default assumptions about typical situations. Most knowledge is represented through frame defaults, not explicit facts. When you encounter a new situation, you retrieve the closest matching frame and let its defaults fill in whatever you don't yet know — then override defaults as specifics arrive.</p></div>
+<h3>2.5 Goals: Difference-Engines</h3>
+<table>
+<tr><th>Minsky Concept</th><th>Definition</th><th>Software Implementation</th></tr>
+<tr><td><strong>Difference-Engine</strong></td><td>Compare current state to desired state; activate agents to reduce the gap</td><td>Goal-driven planning loop</td></tr>
+<tr><td><strong>Suppressor</strong></td><td>Reacts <em>after</em> an undesired state occurs — blocks the action</td><td>Post-validation guard</td></tr>
+<tr><td><strong>Censor</strong></td><td>Intercepts <em>before</em> an undesired state — deflects the thought</td><td>Pre-validation guard / circuit breaker</td></tr>
+<tr><td><strong>Demon</strong></td><td>Lurks silently watching for a specific condition, then intervenes</td><td>Event listener / trigger</td></tr>
+</table>
+<div class="key"><p><strong>Key principle</strong>: A goal = a representation of a desired state + a mechanism to persist until that state is achieved. Difference-engines create the appearance of "purpose" and "intention" without requiring any agent to consciously want anything.</p></div>
+<p><strong>Learning from failure via censors</strong>: Don't just remember what works — remember what <em>doesn't</em> work, and the conditions under which it fails. Censor memories say "don't do X in situation Y." This is a distinct learning mode from positive reinforcement, and Minsky argues it's at least as important.</p>
+<h3>2.6 Control: Hierarchies, Heterarchies, and B-Brains</h3>
+<table>
+<tr><th>Minsky Concept</th><th>Definition</th><th>Software Implementation</th></tr>
+<tr><td><strong>Hierarchy</strong></td><td>Tree structure where each agent reports to one supervisor</td><td>Standard orchestration pattern</td></tr>
+<tr><td><strong>Heterarchy</strong></td><td>Cross-connected network where agents need each other</td><td>Bidirectional dependencies, peer-to-peer</td></tr>
+<tr><td><strong>Cross-Exclusion</strong></td><td>Competing agents inhibit each other — only one can be active</td><td>Mutex / winner-take-all selection</td></tr>
+<tr><td><strong>Noncompromise</strong></td><td>When agents conflict too long, suppress both and try a third</td><td>Timeout + fallback strategy</td></tr>
+<tr><td><strong>B-Brain</strong></td><td>Supervisory layer that observes A-brain without direct world contact</td><td>Meta-agent / observer / monitor</td></tr>
+</table>
+<div class="key"><p><strong>Key principle</strong>: There is no central controller. Control is distributed. When conflicts arise, they migrate upward through hierarchical levels. If unresolved, the Noncompromise principle kicks in — suppress the conflicting agents and let a different agency try.</p></div>
+<p><strong>B-Brains</strong> are supervisory agents that watch other agents without understanding their domain. A B-brain can detect patterns like confusion (agent cycling), repetition, excessive detail, or insufficient detail — and intervene. You can stack B-brains (C watches B watches A) but too many layers risk instability.</p>
+<h3>2.7 Development and Learning</h3>
+<table>
+<tr><th>Minsky Concept</th><th>Definition</th><th>Software Implementation</th></tr>
+<tr><td><strong>Papert's Principle</strong></td><td>Growth comes from building new administrative systems over existing skills</td><td>Layered capability development</td></tr>
+<tr><td><strong>Attachment Learning</strong></td><td>Trusted source shifts learning from "how" to "what goals"</td><td>Supervised fine-tuning from trusted feedback</td></tr>
+<tr><td><strong>Functional Autonomy</strong></td><td>Subgoals become independent goals detached from their origin</td><td>Emergent agent behaviors</td></tr>
+<tr><td><strong>Investment Principle</strong></td><td>Well-developed skills attract more use, compounding advantage</td><td>Preferential routing to proven agents</td></tr>
+<tr><td><strong>Exception Principle</strong></td><td>Changing a heavily-used skill is costly — disruption exceeds gain</td><td>Stability bias for core agents</td></tr>
+</table>
+<h3>2.8 Realms and Analogy</h3>
+<table>
+<tr><th>Minsky Concept</th><th>Definition</th><th>Software Implementation</th></tr>
+<tr><td><strong>Realm</strong></td><td>Division of thought with distinct representations (physical, social, possessional, psychological)</td><td>Domain-specific agency clusters</td></tr>
+<tr><td><strong>Paranome</strong></td><td>Agent operating across multiple realms simultaneously</td><td>Cross-domain mapping agent</td></tr>
+<tr><td><strong>Cross-Realm Correspondence</strong></td><td>Systematic analogies between realms enabling skill transfer</td><td>Analogy engine / metaphor library</td></tr>
+<tr><td><strong>Uniframe</strong></td><td>Common structure applying across multiple contexts</td><td>Shared abstract schema</td></tr>
+</table>
+<hr>
+<h2>3. System Architecture</h2>
+<pre><code>
+┌─────────────────────────────────────────────────────────────────┐
+│                        B-BRAIN LAYER                            │
+│                                                                 │
+│  Meta-agents that observe without participating:                │
+│  - ConfusionDetector: spots agents cycling or stuck             │
+│  - ConflictMonitor: detects prolonged agent disagreements       │
+│  - ProgressTracker: monitors difference-engine convergence      │
+│  - CensorRegistry: maintains &quot;don&#x27;t do X in Y&quot; memories        │
+│  - PerformanceObserver: tracks which agents contribute to       │
+│    successful outcomes (credit assignment)                      │
+│                                                                 │
+├─────────────────────────────────────────────────────────────────┤
+│                       AGENCY LAYER                              │
+│                                                                 │
+│  Composite agencies that coordinate agent groups:               │
+│  - GoalManager: difference-engines driving toward objectives    │
+│  - ConflictResolver: hierarchy + cross-exclusion + noncompromise│
+│  - FrameSelector: matches situations to best-fit frames         │
+│  - MemoryManager: K-line creation, retrieval, level-banding     │
+│  - RealmCoordinator: manages paranome cross-domain mappings     │
+│                                                                 │
+├─────────────────────────────────────────────────────────────────┤
+│                       AGENT LAYER                               │
+│                                                                 │
+│  LLM-backed specialized reasoners + deterministic utilities:    │
+│  - Each agent: focused system prompt + scoped tools             │
+│  - Communicate via polyneme bus (pub/sub event system)          │
+│  - Use pronomes for temporary role bindings                     │
+│  - Execute within frame-based knowledge structures              │
+│  - Report activity to K-line memory system                      │
+│  - Subject to censor/suppressor guards                          │
+│                                                                 │
+├─────────────────────────────────────────────────────────────────┤
+│                    K-LINE MEMORY STORE                           │
+│                                                                 │
+│  Distributed long-term memory:                                  │
+│  - Activation snapshots: which agents were active + context     │
+│  - Level-banded: strong core fields + weak fringe defaults      │
+│  - Hierarchical: K-lines referencing K-lines (knowledge trees)  │
+│  - Similarity retrieval via vector embeddings                   │
+│  - Temporal decay on fringe elements                            │
+│  - Censor memories: &quot;situation X → don&#x27;t do Y&quot;                  │
+│                                                                 │
+├─────────────────────────────────────────────────────────────────┤
+│                   FRAME KNOWLEDGE BASE                          │
+│                                                                 │
+│  Stereotype templates with typed terminal slots:                │
+│  - Default fillers for missing information                      │
+│  - Trans-frames for action sequences (Actor→Action→Recipient)   │
+│  - Frame-arrays for multi-perspective reasoning                 │
+│  - Recognizers (input pattern detection) and                    │
+│    Memorizers (state storage/activation)                        │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3>3.1 Agent Implementation</h3>
+<p>Each agent in the society is an LLM-backed service with:</p>
+<ul>
+<li><strong>System prompt</strong>: Defines the agent's specialty, constraints, and role within the society</li>
+<li><strong>Tools</strong>: Scoped tool access relevant to the agent's domain (e.g., a memory-retrieval agent has vector search tools; a censor agent has access to the failure registry)</li>
+<li><strong>Signal interface</strong>: Subscribes to relevant polynemes on the bus, emits signals when it has results</li>
+<li><strong>Context window</strong>: Receives the current pronome bindings, active frame, and relevant K-line excerpts — not the entire system state</li>
+</ul>
+<p>Some agents don't need full LLM reasoning and can be implemented as deterministic functions — routing agents, timer-based demons, cross-exclusion arbiters, event loggers. The architecture doesn't require every agent to be LLM-backed, only that agents <em>can</em> reason when their domain demands it.</p>
+<p><strong>Agent lifecycle</strong>: Agents are activated by incoming signals, perform their specialized reasoning, emit results as new signals, and return to dormancy. They don't maintain internal state between activations — all persistent state lives in K-lines, frames, and the context store.</p>
+<h3>3.2 The Polyneme Bus (Inter-Agent Communication)</h3>
+<p>The central nervous system of the architecture. A pub/sub event bus where:</p>
+<ul>
+<li><strong>Publishers</strong> emit named signals (polynemes)</li>
+<li><strong>Subscribers</strong> each interpret the signal in their own way</li>
+<li><strong>Isonomes</strong> are special system-wide signals with uniform effects (e.g., "shift attention", "increase detail level")</li>
+<li><strong>Pronomes</strong> are temporary bindings maintained in a context store</li>
+</ul>
+<p>No agent needs to know what other agents do with a signal. This enables loose coupling and emergent coordination.</p>
+<h4>Signal Envelope</h4>
+<p>Every message on the bus is wrapped in a standard envelope:</p>
+<pre><code>
+{
+  id:          string       // unique event ID (ULID for time-ordering)
+  timestamp:   ISO-8601     // when the signal was emitted
+  source:      AgentId      // who emitted it
+  signal:      string       // the polyneme name (e.g., &quot;block.found&quot;, &quot;goal.achieved&quot;)
+  type:        &quot;polyneme&quot; | &quot;isonome&quot; | &quot;pronome-bind&quot; | &quot;censor&quot; | &quot;activation&quot;
+  payload:     any          // signal-specific data
+  context: {
+    pronomes:  Record&lt;string, AgentId&gt;   // current role bindings (Actor, Goal, etc.)
+    frame:     FrameId | null            // active frame at time of emission
+    klines:    KLineId[]                 // K-lines that influenced this signal
+    micronemes: number[]                 // contextual embedding vector
+  }
+  causedBy:    EventId | null            // parent event that triggered this one
+}
+</code></pre>
+<p>This envelope makes every signal fully traceable. The <code>causedBy</code> field creates a causal chain — you can walk backward from any event to reconstruct the full decision path.</p>
+<h4>Communication Patterns</h4>
+<p>Agents communicate through five distinct patterns on the bus, each mapping to a Minsky concept:</p>
+<pre><code>
+1. POLYNEME BROADCAST (one-to-many, heterogeneous interpretation)
+   ┌─────────┐    &quot;block.found&quot;    ┌──────────┐
+   │  Find   │ ──────────────────► │  Grasp   │  interprets as: &quot;prepare to grip&quot;
+   │  Agent  │ ──────────────────► │  Move    │  interprets as: &quot;plan path to block&quot;
+   └─────────┘ ──────────────────► │  Builder │  interprets as: &quot;ready for next step&quot;
+                                   └──────────┘
+
+2. ISONOME SYSTEM SIGNAL (one-to-all, uniform effect)
+   ┌──────────┐   &quot;attention.shift&quot;   ┌─── All Agencies ───┐
+   │ B-Brain  │ ────────────────────► │ Each increases      │
+   └──────────┘                       │ vigilance uniformly │
+                                      └─────────────────────┘
+
+3. PRONOME BINDING (context assignment)
+   ┌──────────┐   pronome-bind: {role: &quot;Actor&quot;, agent: &quot;ChildAgent&quot;}
+   │  Frame   │ ──────────────────► Context Store
+   │ Selector │   pronome-bind: {role: &quot;Goal&quot;, agent: &quot;TowerTop&quot;}
+   └──────────┘ ──────────────────► Context Store
+
+4. CROSS-EXCLUSION (mutual inhibition)
+   ┌──────────┐                  ┌──────────┐
+   │ Builder  │ ◄── inhibit ──► │ Wrecker  │   Only one can be active.
+   └──────────┘                  └──────────┘   Winner determined by
+                                                supervisor priority.
+
+5. K-LINE ACTIVATION (memory recall → agent reactivation)
+   ┌──────────┐   retrieve      ┌──────────┐   reactivate    ┌─── Agents ───┐
+   │ Trigger  │ ──────────────► │  K-Line  │ ──────────────► │ Find, Grasp, │
+   │ (similar │                 │  Memory  │                  │ Move, Put    │
+   │  problem)│                 │  Store   │                  │ (as before)  │
+   └──────────┘                 └──────────┘                  └──────────────┘
+</code></pre>
+<h4>Audit Trail</h4>
+<p><strong>Every signal is persisted to an append-only event log.</strong> This log is the ground truth for the entire system's behavior and serves three purposes:</p>
+<ol>
+<li><strong>Debugging</strong>: Replay any sequence of events to understand what happened and why</li>
+<li><strong>K-Line creation</strong>: When a task succeeds, the relevant event subsequence becomes the raw material for a new K-line</li>
+<li><strong>Introspection</strong>: The B-Brain layer and external introspection apps consume this log in real-time</li>
+</ol>
+<p>The event log is structured as a time-ordered stream with causal links:</p>
+<pre><code>
+EventLog:
+  ├── event-001: Find emitted &quot;block.found&quot;           causedBy: null
+  ├── event-002: Grasp received &quot;block.found&quot;          causedBy: event-001
+  ├── event-003: Move received &quot;block.found&quot;           causedBy: event-001
+  ├── event-004: Grasp emitted &quot;grip.ready&quot;            causedBy: event-002
+  ├── event-005: CensorRegistry checked &quot;block.reuse&quot;  causedBy: event-001
+  ├── event-006: Move emitted &quot;path.planned&quot;           causedBy: event-003
+  └── ...
+</code></pre>
+<h3>3.7 The Introspection App (B-Brain Interface)</h3>
+<p>Minsky's B-Brain concept — a supervisory layer that observes the A-Brain (the working agents) without participating in the domain — maps directly to an introspection application.</p>
+<h4>Architecture</h4>
+<pre><code>
+┌──────────────────────────────────────────────────────────┐
+│                    INTROSPECTION APP                      │
+│                                                          │
+│  ┌──────────────┐  ┌──────────────┐  ┌───────────────┐  │
+│  │  Agent Graph  │  │  Event Flow  │  │  Memory View  │  │
+│  │  (who&#x27;s on)   │  │  (signals)   │  │  (K-lines)    │  │
+│  └──────┬───────┘  └──────┬───────┘  └───────┬───────┘  │
+│         │                 │                   │          │
+│  ┌──────┴─────────────────┴───────────────────┴───────┐  │
+│  │              Event Stream Consumer                  │  │
+│  └─────────────────────┬──────────────────────────────┘  │
+│                        │                                 │
+├────────────────────────┼─────────────────────────────────┤
+│                        │  (read-only event stream)       │
+│    ┌───────────────────▼───────────────────────────┐     │
+│    │              AUDIT EVENT LOG                    │     │
+│    │         (append-only, all signals)              │     │
+│    └───────────────────────────────────────────────┘     │
+│                     AGENT SOCIETY                         │
+└──────────────────────────────────────────────────────────┘
+</code></pre>
+<p>The introspection app is <strong>strictly read-only</strong> — it consumes the event log but never injects signals back into the agent society. This preserves Minsky's insight that B-Brains observe without participating.</p>
+<h4>Views</h4>
+<ol>
+<li><strong>Agent Activation Graph</strong>: Real-time visualization of which agents are active/dormant. Shows agencies as nested groups. Highlights cross-exclusion conflicts (two agents fighting for the same slot).</li>
+<li><strong>Event Flow Timeline</strong>: Chronological stream of polyneme signals with causal links. Filter by agent, signal type, or frame. Click any event to see its full envelope including pronome context and K-line references.</li>
+<li><strong>Memory View</strong>: Browse K-line store. See which K-lines were retrieved for the current task. Visualize level-banding (core vs. fringe confidence). Show knowledge-tree hierarchy.</li>
+<li><strong>Conflict Dashboard</strong>: Active cross-exclusion battles. Noncompromise firings (both sides suppressed). Censor/suppressor triggers with the conditions that fired them.</li>
+<li><strong>Goal Progress</strong>: Difference-engine state — current vs. desired, with gap visualization. Shows which agents are working to close which gaps.</li>
+<li><strong>Causal Trace</strong>: Select any outcome and walk backward through the <code>causedBy</code> chain to see exactly which signals and agent activations led to it. This is the primary debugging tool.</li>
+</ol>
+<h3>3.3 K-Line Memory System (Long-Term Memory)</h3>
+<p>The heart of the system's memory:</p>
+<ol>
+<li><strong>Capture</strong>: When a task succeeds, snapshot which agents were active, what frame was in use, what pronome bindings were set, and the context (micronemes)</li>
+<li><strong>Store</strong>: Persist the snapshot with a vector embedding for similarity search, plus structured metadata for exact-match queries</li>
+<li><strong>Retrieve</strong>: On new problems, find similar K-lines by vector similarity. Reactivate the recorded agent set to recreate a similar "mental state"</li>
+<li><strong>Level-Band</strong>: Each field in a K-line has a confidence weight. Core fields (high confidence) persist indefinitely. Fringe fields (low confidence) serve as defaults and decay over time or are easily overridden</li>
+<li><strong>Hierarchy</strong>: K-lines can reference other K-lines, forming knowledge-trees. Higher-level K-lines capture abstract patterns; lower-level ones capture specifics</li>
+</ol>
+<h3>3.4 Frame Engine (Knowledge Representation)</h3>
+<p>Frames are the system's way of representing what it knows about typical situations:</p>
+<ol>
+<li><strong>Frame Definition</strong>: Schema with named terminals (slots), each with a type, default filler, and confidence level</li>
+<li><strong>Frame Matching</strong>: When a situation arises, find the best-matching frame(s). Use locking-in (mutual support among matching frames) to select the winner</li>
+<li><strong>Default Filling</strong>: Unfilled terminals get default values (weak confidence). Override with specifics as they arrive</li>
+<li><strong>Trans-Frames</strong>: Action templates binding pronome roles (Actor, Action, Origin, Destination, Instrument, Goal)</li>
+<li><strong>Frame-Arrays</strong>: Multiple related frames sharing terminals — enables perspective-switching</li>
+</ol>
+<h3>3.5 Difference-Engine (Goal Pursuit)</h3>
+<p>The mechanism that creates apparent intentionality:</p>
+<ol>
+<li>Maintain a representation of the <strong>desired state</strong> (goal frame)</li>
+<li>Continuously compare to <strong>current state</strong></li>
+<li>Identify <strong>differences</strong></li>
+<li>Activate agents whose job is to reduce specific differences</li>
+<li>Continue until differences are eliminated or a censor/timeout fires</li>
+</ol>
+<h3>3.6 Censor/Suppressor System (Learning from Failure)</h3>
+<p>A parallel learning track to positive memory:</p>
+<ul>
+<li><strong>Suppressors</strong>: Trigger after a bad outcome. Record: "When I was in state S and did action A, the result was bad." Block action A when state S recurs</li>
+<li><strong>Censors</strong>: Trigger before a bad outcome. Recognize precursor states and deflect before the bad action is even considered. More efficient but harder to learn</li>
+<li><strong>Demons</strong>: Always-on watchers for specific dangerous conditions</li>
+</ul>
+<hr>
+<h2>4. Implementation Plan</h2>
+<h3>Phase 1: Foundation</h3>
+<p>Build the core infrastructure:</p>
+<ol>
+<li><strong>Agent base class</strong> — LLM-backed agent with system prompt, scoped tools, signal interface, and lifecycle management. Also supports deterministic (non-LLM) agents for routing, timing, and arbitration</li>
+<li><strong>Agency container</strong> — manages a group of agents, routes signals, presents unified interface</li>
+<li><strong>Polyneme bus</strong> — pub/sub event system with isonome and pronome support, append-only event log</li>
+<li><strong>Context store</strong> — pronome bindings, microneme context, current frame reference</li>
+<li><strong>Introspection event stream</strong> — real-time read-only access to the audit log for the B-Brain layer and external apps</li>
+</ol>
+<h3>Phase 2: Memory</h3>
+<p>Build the K-line memory system:</p>
+<ol>
+<li><strong>K-Line schema</strong> — activation snapshot format with level-banding</li>
+<li><strong>Vector store integration</strong> — similarity-based K-line retrieval (Pinecone or similar)</li>
+<li><strong>Memory manager agency</strong> — handles capture, storage, retrieval, decay</li>
+<li><strong>Hierarchical K-lines</strong> — K-lines referencing K-lines, knowledge-tree indexing</li>
+</ol>
+<h3>Phase 3: Knowledge</h3>
+<p>Build the frame engine:</p>
+<ol>
+<li><strong>Frame schema</strong> — terminals with types, defaults, confidence levels</li>
+<li><strong>Frame matching</strong> — recognizer agents that detect when a frame applies</li>
+<li><strong>Frame-arrays</strong> — perspective-switching via shared terminals</li>
+<li><strong>Trans-frames</strong> — action templates with pronome role slots</li>
+</ol>
+<h3>Phase 4: Goals and Control</h3>
+<p>Build the control mechanisms:</p>
+<ol>
+<li><strong>Difference-engine</strong> — goal representation + gap detection + agent activation</li>
+<li><strong>Conflict resolution</strong> — hierarchy, cross-exclusion, noncompromise</li>
+<li><strong>Censor/suppressor registry</strong> — failure memory + guard evaluation</li>
+<li><strong>B-brain observer</strong> — meta-agent layer monitoring for confusion, loops, stalls</li>
+</ol>
+<h3>Phase 5: Demo Society</h3>
+<p>Build a working demonstration:</p>
+<ol>
+<li><strong>Builder scenario</strong> — recreate Minsky's block-building example</li>
+<li>Builder agency (composed of Find, Get, Put sub-agents)</li>
+<li>See, Move, Grasp agents at the lowest level</li>
+<li>Frame-based block/tower knowledge</li>
+<li>K-line memories of successful builds</li>
+<li>Censors for "don't reuse blocks already in the tower"</li>
+<li><strong>Conversational agent</strong> — a society that can discuss topics</li>
+<li>Language-frames for understanding</li>
+<li>Memory retrieval for relevant past conversations</li>
+<li>Multiple realm support (factual, social, emotional)</li>
+</ol>
+<hr>
+<h2>5. Key Architectural Decisions</h2>
+<ol>
+<li><strong>Agents are LLM-backed reasoners</strong> — each agent can think within its domain; the society provides memory, coordination, and structure that no individual agent has</li>
+<li><strong>No central controller</strong> — intelligence emerges from agent interactions, not a homunculus</li>
+<li><strong>Conflict is healthy</strong> — agents disagree; resolution mechanisms (hierarchy, cross-exclusion, noncompromise) handle it</li>
+<li><strong>Memory is distributed</strong> — K-lines capture <em>which agents were active</em>, not raw data dumps</li>
+<li><strong>Defaults everywhere</strong> — frames pre-fill with assumptions; new info overrides weak defaults</li>
+<li><strong>Learning from failure is first-class</strong> — censors/suppressors are as important as positive memories</li>
+<li><strong>Layered development</strong> — each new capability layer builds on the previous stable layer</li>
+<li><strong>Multiple realms</strong> — separate agencies for different domains, connected by paranomes for cross-domain analogy</li>
+<li><strong>No synchronous "now"</strong> — each agent has different temporal experience; don't assume global clock</li>
+<li><strong>Self-knowledge is limited by design</strong> — not all agent internals should be introspectable (prevents harmful self-modification)</li>
+<li><strong>Circular causality is expected</strong> — agents mutually reinforce; don't force linearization</li>
+<li><strong>Observable by default</strong> — every signal is logged; the introspection app is not optional, it is how we understand what the society is doing</li>
+</ol>
+<hr>
+<h2>6. Glossary of Minsky Terms Used in This Architecture</h2>
+<ul>
+<li><strong>Agent</strong>: Specialized reasoner. Capable within its domain, ignorant of the larger picture. Typically LLM-backed.</li>
+<li><strong>Agency</strong>: Group of agents seen as unified capability from outside.</li>
+<li><strong>B-Brain</strong>: Supervisory agent that observes without participating in the domain.</li>
+<li><strong>Censor</strong>: Blocks bad actions <em>before</em> they happen by recognizing precursor states.</li>
+<li><strong>Cross-Exclusion</strong>: Mutual inhibition — only one of a competing set can be active.</li>
+<li><strong>Default Assumption</strong>: Weak belief used when no better info exists. Easily overridden.</li>
+<li><strong>Demon</strong>: Always-on watcher for a specific condition.</li>
+<li><strong>Difference-Engine</strong>: Compares current vs. desired state; activates agents to close gaps.</li>
+<li><strong>Frame</strong>: Knowledge template with slots (terminals) and default fillers.</li>
+<li><strong>Frame-Array</strong>: Family of frames sharing terminals for multi-perspective reasoning.</li>
+<li><strong>Isonome</strong>: System-wide signal with uniform effect on all agencies.</li>
+<li><strong>K-Line</strong>: Memory snapshot of which agents were active during a successful episode.</li>
+<li><strong>Level-Band</strong>: Confidence gradient — strong core + weak fringes in a K-line.</li>
+<li><strong>Microneme</strong>: Subtle context signal that shades interpretation.</li>
+<li><strong>Noncompromise Principle</strong>: When agents conflict too long, suppress both and try a third.</li>
+<li><strong>Paranome</strong>: Agent operating across multiple realms simultaneously.</li>
+<li><strong>Polyneme</strong>: Signal interpreted differently by each receiving agency.</li>
+<li><strong>Pronome</strong>: Temporary role binding (the current Actor, Goal, etc.).</li>
+<li><strong>Realm</strong>: Domain-specific division of the mind with distinct representations.</li>
+<li><strong>Suppressor</strong>: Blocks bad actions <em>after</em> recognizing the undesired state occurred.</li>
+<li><strong>Trans-Frame</strong>: Action template with role slots (Actor, Action, Origin, Destination).</li>
+<li><strong>Uniframe</strong>: Abstract structure that applies across multiple contexts.</li>
+</ul>
+<hr>
+<h2>References</h2>
+<ul>
+<li>Minsky, Marvin. <em>The Society of Mind</em>. Simon & Schuster, 1986.</li>
+<li>Reference text: <code>reference/society_of_mind.md</code> (converted from epub at github.com/ttn114/societyofmind)</li>
+</ul></body></html>

@@ -1,0 +1,11 @@
+.env*.local
+.DS_Store
+node_modules/
+*.pyc
+__pycache__/
+MyNotes
+
+
+# Copyrighted book text kept locally only
+reference/
+.next/

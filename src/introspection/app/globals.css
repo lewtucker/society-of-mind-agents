@@ -1,0 +1,259 @@
+@import "tailwindcss";
+
+/* ─── Color tokens ────────────────────────────────────────────────────────────
+   Edit ONLY this block to retheme the entire app.
+   Components reference semantic class names (below) — never raw colors.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Surfaces */
+  --bg-page:   #f3f4f6;
+  --bg-panel:  #ffffff;
+  --bg-hover:  #f0f0f0;
+  --bg-result: #f8f9fa;
+
+  /* Text */
+  --text-primary:   #0d0d0d;
+  --text-secondary: #090909;
+  --text-muted:     #070707;
+
+  /* Borders & dividers */
+  --border-strong:  #111827;
+  --border-default: #374151;
+
+  /* Focus / active accent */
+  --accent:      #0369a1;
+  --accent-bg:   #e0f2fe;
+  --accent-text: #0c4a6e;
+
+  /* Mode badge (OBSERVE / ACT) */
+  --mode-bg:     #fffbeb;
+  --mode-border: #b45309;
+  --mode-text:   #78350f;
+
+  /* Signal type colors */
+  --sig-polyneme:   #15803d;
+  --sig-isonome:    #854d0e;
+  --sig-activation: #1d4ed8;
+  --sig-censor:     #b91c1c;
+  --sig-pronome:    #6d28d9;
+  --sig-tool:       #c2410c;
+
+  /* Agent state: active */
+  --agent-active-bg:     #f0fdf4;
+  --agent-active-border: #16a34a;
+  --agent-active-text:   #14532d;
+
+  /* Agent state: conflict */
+  --agent-conflict-bg:     #fff1f2;
+  --agent-conflict-border: #dc2626;
+  --agent-conflict-text:   #7f1d1d;
+
+  /* Agent state: watching */
+  --agent-watching-bg:     #ecfeff;
+  --agent-watching-border: #0891b2;
+  --agent-watching-text:   #164e63;
+
+  /* Agent state: dormant */
+  --agent-dormant-bg:     #ffffff;
+  --agent-dormant-border: #374151;
+  --agent-dormant-text:   #374151;
+
+  /* K-line types */
+  --kline-positive-bg:     #f0fdf4;
+  --kline-positive-stroke: #15803d;
+  --kline-censor-bg:       #fff1f2;
+  --kline-censor-stroke:   #dc2626;
+  --kline-suppressor-bg:   #fff7ed;
+  --kline-suppressor-stroke: #ea580c;
+  --kline-abstract-bg:     #faf5ff;
+  --kline-abstract-stroke: #9333ea;
+
+  /* Band colors */
+  --band-core:       #15803d;
+  --band-peripheral: #0891b2;
+  --band-fringe:     #374151;
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────── */
+
+body {
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@theme inline {
+  --color-background: var(--bg-page);
+  --color-foreground: var(--text-primary);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* ─── Semantic layout classes ─────────────────────────────────────────────── */
+
+.som-page  { background: var(--bg-page);  color: var(--text-primary); }
+.som-panel { background: var(--bg-panel); }
+
+/* ─── Text ───────────────────────────────────────────────────────────────── */
+
+.som-text-primary   { color: var(--text-primary); }
+.som-text-secondary { color: var(--text-secondary); }
+.som-text-muted     { color: var(--text-muted); }
+.som-text-success   { color: var(--agent-active-text); }
+.som-text-error     { color: var(--kline-censor-stroke); }
+.som-text-warning   { color: var(--mode-text); }
+.som-text-accent    { color: var(--accent-text); }
+
+/* ─── Borders & dividers ─────────────────────────────────────────────────── */
+
+.som-border-strong { border-color: var(--border-strong); }
+.som-border        { border-color: var(--border-default); }
+.som-divider       { background-color: var(--border-strong); }
+
+/* ─── Interactive rows ───────────────────────────────────────────────────── */
+
+.som-row           { border-color: var(--border-default); }
+.som-row:hover     { background: var(--bg-hover); }
+
+/* ─── Inputs ─────────────────────────────────────────────────────────────── */
+
+.som-input {
+  background: var(--bg-panel);
+  border-color: var(--border-default);
+  color: var(--text-primary);
+}
+.som-input::placeholder { color: var(--text-muted); }
+.som-input:focus        { border-color: var(--accent); outline: none; }
+
+/* ─── Buttons ────────────────────────────────────────────────────────────── */
+
+.som-btn {
+  background: var(--bg-panel);
+  border-color: var(--border-default);
+  color: var(--text-primary);
+}
+.som-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+.som-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.som-btn-active {
+  background: var(--accent-bg);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+/* ─── Mode badge ─────────────────────────────────────────────────────────── */
+
+.som-mode-badge {
+  background: var(--mode-bg);
+  border-color: var(--mode-border);
+  color: var(--mode-text);
+}
+
+/* ─── Result panel ───────────────────────────────────────────────────────── */
+
+.som-result {
+  background: var(--bg-result);
+  border-color: var(--border-default);
+}
+
+/* ─── Signal type colors ─────────────────────────────────────────────────── */
+
+.som-sig-polyneme   { color: var(--sig-polyneme); }
+.som-sig-isonome    { color: var(--sig-isonome); }
+.som-sig-activation { color: var(--sig-activation); }
+.som-sig-censor     { color: var(--sig-censor); }
+.som-sig-pronome    { color: var(--sig-pronome); }
+.som-sig-tool       { color: var(--sig-tool); }
+
+/* ─── Agent state cards ──────────────────────────────────────────────────── */
+
+.som-agent-active {
+  background: var(--agent-active-bg);
+  border-color: var(--agent-active-border);
+  color: var(--agent-active-text);
+}
+.som-agent-conflict {
+  background: var(--agent-conflict-bg);
+  border-color: var(--agent-conflict-border);
+  color: var(--agent-conflict-text);
+}
+.som-agent-watching {
+  background: var(--agent-watching-bg);
+  border-color: var(--agent-watching-border);
+  color: var(--agent-watching-text);
+}
+.som-agent-dormant {
+  background: var(--agent-dormant-bg);
+  border-color: var(--agent-dormant-border);
+  color: var(--agent-dormant-text);
+}
+
+/* ─── Agent status dots ──────────────────────────────────────────────────── */
+
+.som-dot-active   { background: var(--agent-active-border); }
+.som-dot-conflict { background: var(--agent-conflict-border); }
+.som-dot-watching { background: var(--agent-watching-border); }
+.som-dot-dormant  { background: var(--border-default); }
+
+/* ─── K-line cards ───────────────────────────────────────────────────────── */
+
+.som-kline-positive {
+  background: var(--kline-positive-bg);
+  border-color: var(--kline-positive-stroke);
+}
+.som-kline-censor {
+  background: var(--kline-censor-bg);
+  border-color: var(--kline-censor-stroke);
+}
+.som-kline-suppressor {
+  background: var(--kline-suppressor-bg);
+  border-color: var(--kline-suppressor-stroke);
+}
+.som-kline-abstract {
+  background: var(--kline-abstract-bg);
+  border-color: var(--kline-abstract-stroke);
+}
+
+/* K-line type label colors */
+.som-kline-label-positive   { color: var(--kline-positive-stroke); }
+.som-kline-label-censor     { color: var(--kline-censor-stroke); }
+.som-kline-label-suppressor { color: var(--kline-suppressor-stroke); }
+.som-kline-label-abstract   { color: var(--kline-abstract-stroke); }
+
+/* ─── Censor guard box ───────────────────────────────────────────────────── */
+
+.som-censor-box {
+  background: var(--kline-censor-bg);
+  border-color: var(--kline-censor-stroke);
+  color: var(--kline-censor-stroke);
+}
+.som-censor-box-label { color: var(--kline-censor-stroke); font-weight: 600; }
+.som-censor-box-desc  { color: var(--text-secondary); }
+
+/* ─── Band pills ─────────────────────────────────────────────────────────── */
+
+.som-band-core {
+  background: var(--kline-positive-bg);
+  border-color: var(--band-core);
+  color: var(--band-core);
+}
+.som-band-peripheral {
+  background: var(--agent-watching-bg);
+  border-color: var(--band-peripheral);
+  color: var(--band-peripheral);
+}
+.som-band-fringe {
+  background: var(--bg-result);
+  border-color: var(--border-default);
+  color: var(--text-secondary);
+}
+
+/* ─── Causal trace ───────────────────────────────────────────────────────── */
+
+.som-trace-dot  { background: var(--band-peripheral); }
+.som-trace-line { background: var(--border-default); }
+.som-trace-signal { color: var(--accent-text); }

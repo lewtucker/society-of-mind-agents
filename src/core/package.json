@@ -1,0 +1,26 @@
+{
+  "name": "@som/core",
+  "version": "0.1.0",
+  "description": "Society of Mind — core infrastructure",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test event-log/EventLog.test.ts polyneme-bus/PolynemeBus.test.ts agent/Agent.test.ts agency/Agency.test.ts context/ContextStore.test.ts query/QueryEngine.test.ts kline/KLineStore.test.ts kline/KLineCapture.test.ts kline/KLineCensor.test.ts frame/FrameStore.test.ts frame/FrameMatching.test.ts frame/TransFrame.test.ts goal/Goal.test.ts conflict/Conflict.test.ts censor/CensorRegistry.test.ts bbrain/BBrain.test.ts demo/BlockBuilder.test.ts conversation/Conversation.test.ts",
+    "emit-test": "tsx scripts/emit-test.ts",
+    "seed-demo": "tsx scripts/seed-demo.ts",
+    "converse": "tsx scripts/seed-conversation.ts",
+    "demo:cross-society": "tsx scripts/seed-cross-society.ts",
+    "demo:learning-curve": "tsx scripts/seed-learning-curve.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.81.0",
+    "better-sqlite3": "^9.4.3",
+    "ulid": "^2.3.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.8",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.4.0"
+  }
+}
