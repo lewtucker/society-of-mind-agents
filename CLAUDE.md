@@ -246,4 +246,4 @@ Start everything in OBSERVE mode. Use the Query Interface to validate that memor
 
 ## GitHub
 
-Private repo: github.com/lewtucker/Claude-SoM
+Public repo: github.com/lewtucker/society-of-mind-agents (development has been discontinued)
