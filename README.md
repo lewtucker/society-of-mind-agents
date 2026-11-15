@@ -2,7 +2,7 @@
 
 This was an experiment to see how far Claude could go in taking Marvin Minsky's *The Society of Mind* (1986) and building a working implementation of it.
 
-> **Status: discontinued.** Further work on this project has stopped. The code and documents are published as-is for anyone interested, with no plans for maintenance or support.
+> **Status: completed research exploration.** See [docs/FEASIBILITY.md](docs/FEASIBILITY.md) for findings and lessons learned. The code and documents are published as-is for anyone interested.
 
 ## What this is
 

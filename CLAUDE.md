@@ -246,4 +246,4 @@ Start everything in OBSERVE mode. Use the Query Interface to validate that memor
 
 ## GitHub
 
-Public repo: github.com/lewtucker/society-of-mind-agents (development has been discontinued)
+Public repo: github.com/lewtucker/society-of-mind-agents (completed research exploration — see `docs/FEASIBILITY.md` for findings and lessons)
