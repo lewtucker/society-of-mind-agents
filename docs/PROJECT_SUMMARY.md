@@ -11,7 +11,13 @@ status: living
 ## What We Built
 
 A working implementation of Marvin Minsky's *Society of Mind* (1986) as a software system,
-using Large Language Models as the reasoning substrate for each agent.
+designed to use Large Language Models as the reasoning substrate for each agent.
+
+> **Note (2026-11-14):** Several statements in this summary describe aspirational goals of
+> the design rather than demonstrated results. In particular, every agent in the built
+> system runs as deterministic code; no LLM-backed agent was ever run, and retrieved
+> K-lines are never used to re-activate agents. These goals are marked below. See
+> [PROJECT_POSTSCRIPT.md](PROJECT_POSTSCRIPT.md) for what was and was not demonstrated.
 
 The system consists of specialized agents that communicate through a typed event bus,
 accumulate long-term memory via K-lines, learn from failure through censors and
@@ -21,8 +27,9 @@ watches for anomalies without participating in the work.
 
 Two demo societies are included: a block-stacking assembly society (Minsky's original
 example) and a conversational society that retrieves relevant past exchanges to inform
-its responses. Both demonstrate that memory improves behavior across sessions — a thing
-no individual LLM call can do alone.
+its responses. Both demonstrate that memory is captured in one session and retrieved in
+the next. Showing that this memory *improves behavior* across sessions — something no
+individual LLM call can do alone — was an aspirational goal that was not tested.
 
 ---
 
@@ -90,11 +97,13 @@ causal chain through the event log.
 ### 2. K-Lines as Activation Snapshots, Not Data
 
 A K-line is not a memory of *what happened*. It is a memory of *which agents were
-active* during a successful episode, along with the context that made them active. When
-retrieved, a K-line does not replay a sequence — it re-activates the *same configuration
-of agents* that solved the problem before.
+active* during a successful episode, along with the context that made them active. The
+design goal was that, when retrieved, a K-line would not replay a sequence — it would
+re-activate the *same configuration of agents* that solved the problem before. (This
+re-activation step is aspirational: capture and retrieval were built, but nothing yet
+wakes the agents a retrieved K-line names.)
 
-This is why K-lines improve behavior rather than just recalling facts. Reactivating a
+This is why K-lines are meant to improve behavior rather than just recall facts. Reactivating a
 K-line puts the system in a similar mental state to when the problem was previously solved:
 the same agents are available, the same defaults are pre-loaded, the same frames are
 primed. The system becomes "more like an earlier version of itself."
@@ -214,16 +223,22 @@ coherent sequence. The intelligence is in the composition, not in any agent.
 
 ### Memory That Improves Behavior Across Sessions
 
-The second run of the block-builder is measurably different from the first. The
+In the block-builder, the second run retrieves the K-lines captured by the first. The
 conversational society's second turn on a familiar topic retrieves K-lines from the first
 turn and references them in its response. This is not a cache or a session variable — it
 is a hybrid similarity search over a growing vector store.
+
+The aspirational goal — that the second run *behaves* measurably better than the first —
+was not tested. Retrieval works; using retrieved memory to change what the society does
+was not built.
 
 ### Failure Learning That Persists
 
 The censor pre-installed in the block-builder demo represents a learned failure: a prior
 run where a block already in the tower was selected as a candidate, causing structural
 collapse. That failure is now encoded as a K-line that fires *before* the mistake recurs.
+The censor was installed by hand; the full loop of failing, capturing a censor from the
+failure and avoiding it next time remains an aspirational goal that was not run end to end.
 
 ### Observable Causal Chains
 
@@ -246,11 +261,13 @@ typed signals through a bus, accumulating K-lines, and resolving conflicts throu
 structured mechanisms rather than conversational turns.
 
 **It is not a retrieval-augmented generation system.** RAG systems retrieve documents
-to improve a single LLM call. This system retrieves K-line activation states to put
-the *entire society* in a similar mental state to when a previous success occurred.
+to improve a single LLM call. This system is designed to retrieve K-line activation
+states to put the *entire society* in a similar mental state to when a previous success
+occurred.
 
 The difference is architectural depth: RAG adds a retrieval step before generation;
-this system uses retrieval to configure the entire agent activation pattern.
+this system aims to use retrieval to configure the entire agent activation pattern. (This
+is an aspirational goal; see the note at the top.)
 
 ---
 
@@ -315,7 +332,7 @@ this system uses retrieval to configure the entire agent activation pattern.
 
 ## Project Repository
 
-Source code: `github.com/lewtucker/Claude-SoM` (private)
+Source code: `github.com/lewtucker/society-of-mind-agents`
 
 ```
 src/core/         — @som/core package (Node.js, TypeScript, ESM)
